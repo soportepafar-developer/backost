@@ -1,0 +1,374 @@
+<?php
+
+namespace App\Entity;
+
+use App\Entity\Costo\Activo;
+use App\Entity\Costo\Costo;
+use App\Entity\Costo\Familia;
+use App\Entity\Costo\Perfil;
+use App\Entity\Costo\Presupuesto;
+use App\Entity\Costo\Producto;
+use App\Entity\Status;
+use App\Repository\EmpresaRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Mapping as ORM;
+
+/**
+ * @ORM\Entity(repositoryClass=EmpresaRepository::class)
+ */
+class Empresa
+{
+    /**
+     * @ORM\Id
+     * @ORM\GeneratedValue
+     * @ORM\Column(type="integer")
+     */
+    private $id;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $nombre;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=Status::class, inversedBy="empresastatus")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $status;
+
+    /**
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    private $createAt;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $createBy;
+
+    /**
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    private $updateAt;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $updateBy;
+
+     /**
+     * @ORM\Column(type="string", length=1000)
+     */
+    private $url_logo;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Perfil::class, mappedBy="empresa")
+     */
+    private $perfil;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Producto::class, mappedBy="empresa")
+     */
+    private $productos;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Costo::class, mappedBy="empresa")
+     */
+    private $costos;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Activo::class, mappedBy="empresa")
+     */
+    private $activos;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Presupuesto::class, mappedBy="empresa")
+     */
+    private $presupuestos;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Familia::class, mappedBy="empresa")
+     */
+    private $familias;
+
+    public function __construct()
+    {
+        $this->perfil = new ArrayCollection();
+        $this->productos = new ArrayCollection();
+        $this->costos = new ArrayCollection();
+        $this->activos = new ArrayCollection();
+        $this->presupuestos = new ArrayCollection();
+        $this->familias = new ArrayCollection();
+    }
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function getNombre(): ?string
+    {
+        return $this->nombre;
+    }
+
+    public function setNombre(string $nombre): self
+    {
+        $this->nombre = $nombre;
+
+        return $this;
+    }
+
+    public function getStatus(): ?Status
+    {
+        return $this->status;
+    }
+
+    public function setStatus(?Status $status): self
+    {
+        $this->status = $status;
+
+        return $this;
+    }
+
+    public function getCreateAt(): ?\DateTimeInterface
+    {
+        return $this->createAt;
+    }
+
+    public function setCreateAt(?\DateTimeInterface $createAt): self
+    {
+        $this->createAt = $createAt;
+
+        return $this;
+    }
+
+    public function getCreateBy(): ?string
+    {
+        return $this->createBy;
+    }
+
+    public function setCreateBy(?string $createBy): self
+    {
+        $this->createBy = $createBy;
+
+        return $this;
+    }
+
+    public function getUpdateAt(): ?\DateTimeInterface
+    {
+        return $this->updateAt;
+    }
+
+    public function setUpdateAt(?\DateTimeInterface $updateAt): self
+    {
+        $this->updateAt = $updateAt;
+
+        return $this;
+    }
+
+    public function getUpdateBy(): ?string
+    {
+        return $this->updateBy;
+    }
+
+    public function setUpdateBy(?string $updateBy): self
+    {
+        $this->updateBy = $updateBy;
+
+        return $this;
+    }
+    
+    public function getUrlLogo(): ?string
+    {
+        return $this->url_logo;
+    }
+
+    public function setUrlLogo(string $url_logo): self
+    {
+        $this->url_logo = $url_logo;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Perfil[]
+     */
+    public function getPerfil(): Collection
+    {
+        return $this->perfil;
+    }
+
+    public function addPerfil(Perfil $perfil): self
+    {
+        if (!$this->perfil->contains($perfil)) {
+            $this->perfil[] = $perfil;
+            $perfil->setEmpresa($this);
+        }
+
+        return $this;
+    }
+
+    public function removePerfil(Perfil $perfil): self
+    {
+        if ($this->perfil->removeElement($perfil)) {
+            // set the owning side to null (unless already changed)
+            if ($perfil->getEmpresa() === $this) {
+                $perfil->setEmpresa(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Producto[]
+     */
+    public function getProductos(): Collection
+    {
+        return $this->productos;
+    }
+
+    public function addProducto(Producto $producto): self
+    {
+        if (!$this->productos->contains($producto)) {
+            $this->productos[] = $producto;
+            $producto->setEmpresa($this);
+        }
+
+        return $this;
+    }
+
+    public function removeProducto(Producto $producto): self
+    {
+        if ($this->productos->removeElement($producto)) {
+            // set the owning side to null (unless already changed)
+            if ($producto->getEmpresa() === $this) {
+                $producto->setEmpresa(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Costo[]
+     */
+    public function getCostos(): Collection
+    {
+        return $this->costos;
+    }
+
+    public function addCosto(Costo $costo): self
+    {
+        if (!$this->costos->contains($costo)) {
+            $this->costos[] = $costo;
+            $costo->setEmpresa($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCosto(Costo $costo): self
+    {
+        if ($this->costos->removeElement($costo)) {
+            // set the owning side to null (unless already changed)
+            if ($costo->getEmpresa() === $this) {
+                $costo->setEmpresa(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Activo[]
+     */
+    public function getActivos(): Collection
+    {
+        return $this->activos;
+    }
+
+    public function addActivo(Activo $activo): self
+    {
+        if (!$this->activos->contains($activo)) {
+            $this->activos[] = $activo;
+            $activo->setEmpresa($this);
+        }
+
+        return $this;
+    }
+
+    public function removeActivo(Activo $activo): self
+    {
+        if ($this->activos->removeElement($activo)) {
+            // set the owning side to null (unless already changed)
+            if ($activo->getEmpresa() === $this) {
+                $activo->setEmpresa(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Presupuesto[]
+     */
+    public function getPresupuestos(): Collection
+    {
+        return $this->presupuestos;
+    }
+
+    public function addPresupuesto(Presupuesto $presupuesto): self
+    {
+        if (!$this->presupuestos->contains($presupuesto)) {
+            $this->presupuestos[] = $presupuesto;
+            $presupuesto->setEmpresa($this);
+        }
+
+        return $this;
+    }
+
+    public function removePresupuesto(Presupuesto $presupuesto): self
+    {
+        if ($this->presupuestos->removeElement($presupuesto)) {
+            // set the owning side to null (unless already changed)
+            if ($presupuesto->getEmpresa() === $this) {
+                $presupuesto->setEmpresa(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Familia[]
+     */
+    public function getFamilias(): Collection
+    {
+        return $this->familias;
+    }
+
+    public function addFamilia(Familia $familia): self
+    {
+        if (!$this->familias->contains($familia)) {
+            $this->familias[] = $familia;
+            $familia->setEmpresa($this);
+        }
+
+        return $this;
+    }
+
+    public function removeFamilia(Familia $familia): self
+    {
+        if ($this->familias->removeElement($familia)) {
+            // set the owning side to null (unless already changed)
+            if ($familia->getEmpresa() === $this) {
+                $familia->setEmpresa(null);
+            }
+        }
+
+        return $this;
+    }
+
+}
